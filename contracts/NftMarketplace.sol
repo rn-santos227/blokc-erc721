@@ -9,9 +9,11 @@ contract NftMarketplace is ERC721URIStorage, Ownable {
     uint256 public nextTokenId;
     mapping(uint256 => uint256) public tokenPrice;
 
-    constructor() ERC721("NftMarketplace", "NFTM") {}
+    string public defaultTokenURI = "https://err404-metadata.theblokc.com/image/";
 
-    function mint(address to, string memory tokenURI, string memory title, string memory description) external payable {
+    constructor() ERC721("NftMarketplace", "NFTM") Ownable(msg.sender) {}
+
+    function mint(address to, string memory title, string memory description) external payable {
         if (msg.sender != owner()) {
             require(msg.value >= 100000000000000, "Insufficient fee"); // 0.0001 ether
             payable(owner()).transfer(msg.value);
@@ -19,7 +21,7 @@ contract NftMarketplace is ERC721URIStorage, Ownable {
 
         uint256 tokenId = nextTokenId++;
         _mint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, string.concat(defaultTokenURI, Strings.toString(tokenId)));
         emit MetadataSet(tokenId, title, description);
     }
 

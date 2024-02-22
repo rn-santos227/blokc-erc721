@@ -5,6 +5,8 @@ async function main() {
   const myNFTContract = await await hre.ethers.deployContract("NftMarketplace");
   await myNFTContract.waitForDeployment();
 
+  await myNFTContract.connect(owner).mint();
+  console.log(`Contract deployed to ${myNFTContract.target}`);
 }
 
 main().then(() => process.exit(0)).catch(error => {

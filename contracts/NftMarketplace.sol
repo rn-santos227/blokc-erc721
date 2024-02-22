@@ -5,11 +5,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MyNFT is ERC721URIStorage, Ownable {
+contract NftMarketplace is ERC721URIStorage, Ownable {
     uint256 public nextTokenId;
     mapping(uint256 => uint256) public tokenPrice;
 
-    constructor() ERC721("MyNFT", "MNFT") {}
+    constructor() ERC721("NftMarketplace", "NFTM") {}
 
     function mint(address to, string memory tokenURI, string memory title, string memory description) external payable {
         if (msg.sender != owner()) {

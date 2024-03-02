@@ -27,13 +27,14 @@ contract NftMarketplace is ERC721URIStorage, Ownable {
         require(msg.value >= tokenPrice[tokenId], "Insufficient payment");
 
         address owner = ownerOf(tokenId);
-        _transfer(owner, msg.sender, tokenId);
+        _transfer(address(this), msg.sender, tokenId);
         payable(owner).transfer(msg.value);
         tokenPrice[tokenId] = 0;
     }
 
     function sell(uint256 tokenId, uint256 price) external {
         require(ownerOf(tokenId) == msg.sender, "Not the token owner");
+        _transfer(msg.sender, address(this), tokenId);
         tokenPrice[tokenId] = price;
     }
 }

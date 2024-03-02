@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract NftMarketplace is ERC721URIStorage, Ownable {
     uint256 public nextTokenId;
     mapping(uint256 => uint256) public tokenPrice;
+    mapping(uint256 => address) public tokenOwnerAddresses;
 
     constructor() ERC721("NftMarketplace", "NFTM") Ownable(msg.sender) {}
 
@@ -19,6 +20,7 @@ contract NftMarketplace is ERC721URIStorage, Ownable {
 
         uint256 tokenId = nextTokenId++;
         _mint(msg.sender, tokenId);
+        tokenOwnerAddresses[tokenId] = msg.sender;
         _setTokenURI(tokenId, string.concat("https://err404-metadata.theblokc.com/meta/", Strings.toString(tokenId)));
     }
 
@@ -26,14 +28,16 @@ contract NftMarketplace is ERC721URIStorage, Ownable {
         require(tokenPrice[tokenId] > 0, "Token not for sale");
         require(msg.value >= tokenPrice[tokenId], "Insufficient payment");
 
-        address owner = ownerOf(tokenId);
         _transfer(address(this), msg.sender, tokenId);
-        payable(owner).transfer(msg.value);
+        payable(tokenOwnerAddresses[tokenId]).transfer(msg.value);
+        tokenOwnerAddresses[tokenId] = msg.sender;
         tokenPrice[tokenId] = 0;
     }
 
     function sell(uint256 tokenId, uint256 price) external {
-        require(ownerOf(tokenId) == msg.sender, "Not the token owner");
+        require(tokenOwnerAddresses[tokenId] == msg.sender, "Not the token owner");
+        require(tokenPrice[tokenId] <= 0, "NFT is already for sale");
+        
         _transfer(msg.sender, address(this), tokenId);
         tokenPrice[tokenId] = price;
     }
